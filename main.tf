@@ -33,7 +33,7 @@ resource "null_resource" "create_procedure" {
       AS $$
       try {
           var query = `INSERT INTO DEMO_DB_V3.DEMO_SCHEMA_V3.DOCUMENTS (RELATIVE_PATH, RAW_TEXT)
-                       VALUES ('\\${RELATIVE_PATH}', '\\${RAW_TEXT}')`;
+                       VALUES ('\${RELATIVE_PATH}', '\${RAW_TEXT}')`;
           snowflake.execute({ sqlText: query });
           return 'Record inserted successfully';
       } catch (err) {
