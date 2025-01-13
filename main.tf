@@ -22,7 +22,7 @@ resource "snowflake_procedure" "sp_cdq_status_log" {
   name        = "SP_CDQ_STATUS_LOG"
   database    = "DEMO_DB_V3"
   schema      = "DEMO_SCHEMA_V3"
-  language    = "PYTHON"
+  # language    = "PYTHON"
 
   arguments {
     name = "DATABASE_NAME"
