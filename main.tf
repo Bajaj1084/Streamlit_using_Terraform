@@ -23,34 +23,77 @@ resource "snowflake_procedure" "sp_cdq_status_log" {
   database    = "DEMO_DB_V3"
   schema      = "DEMO_SCHEMA_V3"
   language    = "PYTHON"
-  return_type = "STRING"
 
-  runtime_version = "3.11"
-  packages        = ["snowflake-snowpark-python"]
-  handler         = "main"
+  arguments {
+    name = "DATABASE_NAME"
+    type = "VARCHAR"
+  }
+  arguments {
+    name = "SCHEMA_NAME"
+    type = "VARCHAR"
+  }
+  arguments {
+    name = "QC_ID"
+    type = "VARCHAR"
+  }
+  arguments {
+    name = "SQL_QUERY"
+    type = "VARCHAR"
+  }
+  arguments {
+    name = "START_TS"
+    type = "TIMESTAMP"
+  }
+  arguments {
+    name = "END_TS"
+    type = "TIMESTAMP"
+  }
+  arguments {
+    name = "CYCL_TIME_ID"
+    type = "VARCHAR"
+  }
+  arguments {
+    name = "OUTPUT"
+    type = "VARCHAR"
+  }
+  arguments {
+    name = "THRESHOLD_OPERATOR"
+    type = "VARCHAR"
+  }
+  arguments {
+    name = "THRESHOLD_VALUE"
+    type = "VARCHAR"
+  }
 
-  statement = <<-EOT
-    import snowflake.snowpark as snowpark
-    from datetime import datetime
+  comment             = "Procedure to log CDQ status"
+  return_type         = "STRING"
+  execute_as          = "CALLER"
+  return_behavior     = "IMMUTABLE"
+  null_input_behavior = "RETURNS NULL ON NULL INPUT"
 
-    def main(session: snowpark.Session, DATABASE_NAME: str, SCHEMA_NAME: str, QC_ID: str, SQL_QUERY: str,  
-             START_TS: str, END_TS: str, CYCL_TIME_ID: str, OUTPUT: str, THRESHOLD_OPERATOR: str, THRESHOLD_VALUE: str):
-        try:
-            sql_query = f"""
-            INSERT INTO {DATABASE_NAME}.{SCHEMA_NAME}.CDQ_STATUS_LOG (
-                QC_ID, DQM_ID, DQM_NAME, DQM_DESC, DMN_CD, DMN_SUB_CD, TBL_NM, COL_NM, 
-                DQ_STATUS, DQ_QUERY, IS_CRITICAL, START_TS, END_TS, CYCL_TIME_ID, UPDTD_BY
-            ) 
-            SELECT QC_ID, DQM_ID, DQM_NAME, DQM_DESC, DMN_CD, DMN_SUB_CD, TBL_NM, COL_NM, 
-                   CASE WHEN {OUTPUT} {THRESHOLD_OPERATOR} {THRESHOLD_VALUE} THEN 'P' ELSE 'F' END AS DQ_STATUS,
-                   '{SQL_QUERY.replace("'", "''")}', IS_CRITICAL, '{START_TS}', '{END_TS}', '{CYCL_TIME_ID}', CURRENT_USER()
-            FROM {DATABASE_NAME}.{SCHEMA_NAME}.CDQ_CONFIG 
-            WHERE QC_ID = '{QC_ID}'
-            """
-            session.sql(sql_query).collect()
-            return 'Inserted into CDQ_STATUS_LOG successfully'
-        except Exception as e:
-            return f"Error in SP_Status_Log: {str(e)}"
-  EOT
+  statement = <<EOT
+import snowflake.snowpark as snowpark
+from datetime import datetime
+
+def main(session: snowpark.Session, DATABASE_NAME: str, SCHEMA_NAME: str, QC_ID: str, SQL_QUERY: str,
+         START_TS: str, END_TS: str, CYCL_TIME_ID: str, OUTPUT: str, THRESHOLD_OPERATOR: str, THRESHOLD_VALUE: str):
+    try:
+        # Construct the SQL query to log the status
+        sql_query = f"""
+        INSERT INTO {DATABASE_NAME}.{SCHEMA_NAME}.CDQ_STATUS_LOG (
+            QC_ID, DQM_ID, DQM_NAME, DQM_DESC, DMN_CD, DMN_SUB_CD, TBL_NM, COL_NM, 
+            DQ_STATUS, DQ_QUERY, IS_CRITICAL, START_TS, END_TS, CYCL_TIME_ID, UPDTD_BY
+        ) 
+        SELECT QC_ID, DQM_ID, DQM_NAME, DQM_DESC, DMN_CD, DMN_SUB_CD, TBL_NM, COL_NM, 
+               CASE WHEN {OUTPUT} {THRESHOLD_OPERATOR} {THRESHOLD_VALUE} THEN 'P' ELSE 'F' END AS DQ_STATUS,
+               '{SQL_QUERY.replace("'", "''")}', IS_CRITICAL, '{START_TS}', '{END_TS}', '{CYCL_TIME_ID}', CURRENT_USER()
+        FROM {DATABASE_NAME}.{SCHEMA_NAME}.CDQ_CONFIG 
+        WHERE QC_ID = '{QC_ID}'
+        """
+        # Execute the SQL statement
+        session.sql(sql_query).collect()
+        return 'Inserted into CDQ_STATUS_LOG successfully'
+    except Exception as e:
+        return f"Error in SP_CDQ_STATUS_LOG: {str(e)}"
+EOT
 }
-
