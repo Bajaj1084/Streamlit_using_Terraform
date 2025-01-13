@@ -7,6 +7,7 @@ terraform {
   }
 
   backend "remote" {
+
     organization = "Demo_Using_Terraform"
 
     workspaces {
