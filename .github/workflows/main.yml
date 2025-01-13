@@ -46,7 +46,53 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
       with:
-          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+    # - name: 'Create config'
+    #   shell: bash
+    #   env:
+    #       SNOWFLAKE_PASSWORD: ${{ secrets.SNOWCLI_PW }}
+          
+      
+    #   run: |
+    #     # mkdir -p ~/.snowflake
+    #     # cp config.toml ~/.snowflake/config.toml
+    #     # echo "password = \"$SNOWFLAKE_PASSWORD\"" >> ~/.snowflake/config.toml
+    #     # chmod 0600 ~/.snowflake/config.toml
+
+
+        # if [[ "${{ github.ref_name }}" == "main" ]]; then
+        #       mkdir -p ~/.snowflake
+        #       cp ./prod/config.toml ~/.snowflake/config.toml
+        #       echo "password = \"$SNOWFLAKE_PASSWORD\"" >> ~/.snowflake/config.toml
+        #       chmod 0600 ~/.snowflake/config.toml
+              
+        # elif [[ "${{ github.ref_name }}" == "dev" ]]; then
+        #       mkdir -p ~/.snowflake
+        #       cp ./dev/config.toml ~/.snowflake/config.toml
+        #       echo "password = \"$SNOWFLAKE_PASSWORD\"" >> ~/.snowflake/config.toml
+        #       chmod 0600 ~/.snowflake/config.toml
+              
+        # elif [[ "${{ github.ref_name }}" == "test" ]]; then
+        #       mkdir -p ~/.snowflake
+        #       cp ./test/config.toml ~/.snowflake/config.toml
+        #       echo "password = \"$SNOWFLAKE_PASSWORD\"" >> ~/.snowflake/config.toml
+        #       chmod 0600 ~/.snowflake/config.toml
+        # else
+        #       echo "Invalid branch for deployment"
+        # exit 1
+        # fi
+        
+
+    # - name: Test Snowflake Connection
+    #   shell: bash
+    #   run: |
+    #     snowflake-cli "SELECT CURRENT_USER();"
+    #   continue-on-error: false
+
+    # - name: Terraform Format
+    #   id: fmt
+    #   run: terraform fmt -check
 
     - name: Terraform Init
       id: init
@@ -63,3 +109,24 @@ jobs:
     - name: Terraform Apply
       id: apply
       run: terraform apply -auto-approve
+
+   
+   
+
+    # - name: 'Deploy the Streamlit app'
+    #   shell: bash
+    #   run: |
+    #     if [[ "${{ github.ref_name }}" == "main" ]]; then
+    #       env_directory="./prod"
+    #     elif [[ "${{ github.ref_name }}" == "dev" ]]; then
+    #       env_directory="./dev"
+    #     elif [[ "${{ github.ref_name }}" == "test" ]]; then
+    #       env_directory="./test"
+    #     else
+    #       echo "Error: Invalid branch name."
+    #       exit 1
+    #     fi
+        
+    #     echo "Using environment directory: $env_directory"
+    #     cd $env_directory
+    #     snow streamlit deploy --replace
