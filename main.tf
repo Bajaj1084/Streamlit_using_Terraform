@@ -61,7 +61,7 @@ resource "snowflake_file_format" "csv_ff" {
   validate_utf8                = true
 }
 
-resource "snowflake_file_format" "csv_ff" {
+resource "snowflake_file_format" "app_csv_ff" {
   name                         = "CSV_FF"
   database                     = "DEMO_DB_V4"
   schema                       = "DEMO_SCHEMA"
@@ -218,10 +218,20 @@ resource "snowflake_table" "vector_store" {
 
 
 
+
+
+
+
+
 # Data Copy Commands (Run these manually or via an external process as Terraform does not handle data loading directly)
 # COPY INTO TASTY_BYTES_CHATBOT.APP.DOCUMENTS FROM @TASTY_BYTES_CHATBOT.APP.S3LOAD/DOCUMENTS/
 # COPY INTO TASTY_BYTES_CHATBOT.APP.ARRAY_TABLE FROM @TASTY_BYTES_CHATBOT.APP.S3LOAD/VECTOR_STORE/
 # INSERT INTO TASTY_BYTES_CHATBOT.APP.VECTOR_STORE (SELECT ...) -- As per your SQL logic
+
+
+
+
+
 
 # Data Copy Commands (Run these manually or via an external process as Terraform does not handle data loading directly)
 # COPY INTO TASTY_BYTES_CHATBOT.APP.DOCUMENTS FROM @TASTY_BYTES_CHATBOT.APP.S3LOAD/DOCUMENTS/
