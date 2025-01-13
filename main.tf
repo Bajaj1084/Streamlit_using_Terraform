@@ -7,7 +7,7 @@ terraform {
   }
 
   backend "remote" {
-    organization = "my-organization-name"
+    organization = "Demo_Using_Terraform"
 
     workspaces {
       name = "gh-actions-demo"
@@ -215,21 +215,6 @@ resource "snowflake_table" "vector_store" {
     type = "VECTOR(FLOAT, 768)"
   }
 }
-
-
-
-
-
-
-
-
-# Data Copy Commands (Run these manually or via an external process as Terraform does not handle data loading directly)
-# COPY INTO TASTY_BYTES_CHATBOT.APP.DOCUMENTS FROM @TASTY_BYTES_CHATBOT.APP.S3LOAD/DOCUMENTS/
-# COPY INTO TASTY_BYTES_CHATBOT.APP.ARRAY_TABLE FROM @TASTY_BYTES_CHATBOT.APP.S3LOAD/VECTOR_STORE/
-# INSERT INTO TASTY_BYTES_CHATBOT.APP.VECTOR_STORE (SELECT ...) -- As per your SQL logic
-
-
-
 
 
 
