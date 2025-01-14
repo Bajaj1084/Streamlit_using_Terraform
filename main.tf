@@ -21,8 +21,8 @@ provider "snowflake" {
 
 resource "snowflake_procedure" "proc" {
   name     = "SAMPLEPROC"
-  database = snowflake_database.db.name
-  schema   = snowflake_schema.schema.name
+  database    = "DEMO_DB_V3"
+  schema      = "DEMO_SCHEMA_V3"
   language = "JAVASCRIPT"
   arguments {
     name = "arg1"
